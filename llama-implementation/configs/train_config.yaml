@@ -1,0 +1,29 @@
+# Training configuration for Llama-3.3-70B-Instruct QLoRA fine-tuning
+# Used by src/train.py
+
+# ── Model ──────────────────────────────────────────────────────────────────────
+model_id: meta-llama/Llama-3.3-70B-Instruct
+output_dir: runs/mts_lora
+
+# ── Dataset ────────────────────────────────────────────────────────────────────
+use_mts: true           # MTS-Dialog Task A (1201 train examples)
+use_aci: false          # ACI-Bench full-note generation (67 train examples)
+use_mts_augmented: false  # back-translation data hurt val loss (epoch_1 was best); disable by default
+max_length: 2048  # max tokens per example (dialogue + response)
+
+# ── LoRA ───────────────────────────────────────────────────────────────────────
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+
+# ── Training ───────────────────────────────────────────────────────────────────
+epochs: 3
+lr: 1.0e-4
+per_device_batch_size: 1   # 70B model — keep batch size at 1 even with 4-bit
+grad_accum: 2              # effective batch = 4 GPUs × 1 × 2 = 8
+weight_decay: 0.01
+warmup_ratio: 0.05
+max_grad_norm: 1.0
+
+# ── Logging ────────────────────────────────────────────────────────────────────
+log_every: 50   # steps between loss log lines

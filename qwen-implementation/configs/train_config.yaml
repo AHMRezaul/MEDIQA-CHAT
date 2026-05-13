@@ -1,0 +1,29 @@
+# Training configuration for Qwen2.5-72B-Instruct QLoRA fine-tuning
+# Used by src/train.py
+
+# ── Model ──────────────────────────────────────────────────────────────────────
+model_id: Qwen/Qwen2.5-72B-Instruct
+output_dir: runs/qwen_lora
+
+# ── Dataset ────────────────────────────────────────────────────────────────────
+use_mts: true           # MTS-Dialog Task A (1201 train examples)
+use_aci: false          # ACI-Bench full-note generation (67 train examples)
+use_mts_augmented: false  # back-translation data hurt val loss; disable by default
+max_length: 2048  # max tokens per example (dialogue + response)
+
+# ── LoRA ───────────────────────────────────────────────────────────────────────
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+
+# ── Training ───────────────────────────────────────────────────────────────────
+epochs: 3
+lr: 1.0e-4
+per_device_batch_size: 1   # 72B model — keep batch size at 1 even with 4-bit
+grad_accum: 2              # effective batch = 2 GPUs × 1 × 2 = 4
+weight_decay: 0.01
+warmup_ratio: 0.05
+max_grad_norm: 1.0
+
+# ── Logging ────────────────────────────────────────────────────────────────────
+log_every: 50   # steps between loss log lines
